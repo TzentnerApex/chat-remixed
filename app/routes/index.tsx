@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useCallback, useState } from "react";
-import type { ChatCompletionRequestMessage } from "openai";
-import { Configuration, OpenAIApi } from "openai";
+import OpenAI from "openai";
 
 import { type ActionArgs } from "@remix-run/node";
 import {
@@ -16,15 +15,16 @@ import {
 import context from "~/context";
 import { Send as SendIcon } from "~/components/Icons";
 import Message from "~/components/Message";
+import type { ChatCompletionMessage } from "~/types";
 
 export interface ReturnedDataProps {
   message?: string;
   answer: string;
   error?: string;
-  chatHistory: ChatCompletionRequestMessage[];
+  chatHistory: ChatCompletionMessage[];
 }
 
-export interface ChatHistoryProps extends ChatCompletionRequestMessage {
+export interface ChatHistoryProps extends ChatCompletionMessage {
   error?: boolean;
 }
 
@@ -39,14 +39,13 @@ export async function action({
   const chatHistory = JSON.parse(body.get("chat-history") as string) || [];
 
   // store your key in .env
-  const conf = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
 
   try {
-    const openai = new OpenAIApi(conf);
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
 
-    const chat = await openai.createChatCompletion({
+    const chat = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
         ...context,
@@ -58,7 +57,7 @@ export async function action({
       ],
     });
 
-    const answer = chat.data.choices[0].message?.content;
+    const answer = chat.choices[0].message?.content;
 
     return {
       message: body.get("message") as string,
@@ -318,7 +317,7 @@ export default function IndexPage() {
               <React.Fragment key={`message-${index}`}>
                 <Message
                   error={chat.error}
-                  content={chat.content}
+                  content={chat.content!}
                   role={chat.role}
                 />
               </React.Fragment>

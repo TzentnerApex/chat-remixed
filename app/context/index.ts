@@ -1,4 +1,4 @@
-import { type ChatCompletionRequestMessage } from "openai";
+import type { ChatCompletionMessage } from "~/types";
 
 /**
  * Add the context loading here
@@ -12,4 +12,4 @@ const context = [
   },
 ];
 
-export default context as ChatCompletionRequestMessage[];
+export default context as ChatCompletionMessage[];
