@@ -83,7 +83,7 @@ export default function Message({
     >
       <div
         className={cn(
-          "message-inner space-x-4 max-w-[480px] rounded-3xl p-4 transition-[opacity, transform] duration-300 delay-250 relative text-sm md:text-base",
+          "message-inner space-x-4 max-w-[480px] rounded-3xl p-4 transition-[opacity, transform] duration-300 delay-250 relative text-sm md:text-base flex items-center",
           role === "user"
             ? "bg-black text-white rounded-br-none"
             : " rounded-tl-none bg-slate-100 text-black",
@@ -92,6 +92,9 @@ export default function Message({
             : "opacity-0 translate-y-7"
         )}
       >
+        <div className="message-icon flex items-center justify-center w-10 h-10">
+          {role === "user" ? <UserIcon /> : <AssistantIcon error={error} />}
+        </div>
         <div className="response" ref={messageRef}>
           {thinking ? (
             <div className="flex gap-[5px] min-h-[20px] sm:min-h-[24px] items-center">
