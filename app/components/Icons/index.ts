@@ -4,8 +4,8 @@
  * [ ] Add classes to icons to allow for styling
  */
 
-import Send from './Send';
-import Assistant from './Assistant';
-import User from './User';
+import Send from "./Send";
+import Assistant from "./Assistant";
+import User from "./User";
 
-export {Send, Assistant, User};
+export { Send, Assistant, User };

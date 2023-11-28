@@ -1,4 +1,4 @@
-import type {MetaFunction} from "@remix-run/node";
+import type { MetaFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -8,8 +8,8 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
-import tailwindCss from '~/stylesheets/tailwind.css';
-import customCss from '~/stylesheets/custom.css';
+import tailwindCss from "~/stylesheets/tailwind.css";
+import customCss from "~/stylesheets/custom.css";
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
@@ -43,7 +43,7 @@ export function links() {
     {
       rel: "preconnect",
       href: "https://fonts.gstatic.com",
-      crossOrigin: 'true',
+      crossOrigin: "true",
     },
     {
       rel: "stylesheet",
@@ -56,6 +56,6 @@ export function links() {
     {
       rel: "stylesheet",
       href: customCss,
-    }
+    },
   ];
 }

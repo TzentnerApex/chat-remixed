@@ -1,1 +1,1 @@
-export type Role = 'user' | 'system' | 'assistant';
+export type Role = "user" | "system" | "assistant";

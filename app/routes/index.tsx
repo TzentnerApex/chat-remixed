@@ -1,12 +1,21 @@
-import React, {useRef, useEffect, useCallback, useState} from 'react';
-import {Configuration, OpenAIApi, ChatCompletionRequestMessage} from 'openai';
+import React, { useRef, useEffect, useCallback, useState } from "react";
+import type { ChatCompletionRequestMessage } from "openai";
+import { Configuration, OpenAIApi } from "openai";
 
-import {type ActionArgs} from '@remix-run/node';
-import {Form, useActionData, useNavigation, Link, useSubmit, useLocation, useNavigate} from '@remix-run/react';
+import { type ActionArgs } from "@remix-run/node";
+import {
+  Form,
+  useActionData,
+  useNavigation,
+  Link,
+  useSubmit,
+  useLocation,
+  useNavigate,
+} from "@remix-run/react";
 
-import context from '~/context';
-import {Send as SendIcon} from '~/components/Icons';
-import Message from '~/components/Message';
+import context from "~/context";
+import { Send as SendIcon } from "~/components/Icons";
+import Message from "~/components/Message";
 
 export interface ReturnedDataProps {
   message?: string;
@@ -16,16 +25,18 @@ export interface ReturnedDataProps {
 }
 
 export interface ChatHistoryProps extends ChatCompletionRequestMessage {
-  error?: boolean,
+  error?: boolean;
 }
 
 /**
  * API call executed server side
  */
-export async function action({request}: ActionArgs): Promise<ReturnedDataProps> {
+export async function action({
+  request,
+}: ActionArgs): Promise<ReturnedDataProps> {
   const body = await request.formData();
-  const message = body.get('message') as string;
-  const chatHistory = JSON.parse(body.get('chat-history') as string) || [];
+  const message = body.get("message") as string;
+  const chatHistory = JSON.parse(body.get("chat-history") as string) || [];
 
   // store your key in .env
   const conf = new Configuration({
@@ -36,12 +47,12 @@ export async function action({request}: ActionArgs): Promise<ReturnedDataProps> 
     const openai = new OpenAIApi(conf);
 
     const chat = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo',
+      model: "gpt-3.5-turbo",
       messages: [
         ...context,
         ...chatHistory,
         {
-          role: 'user',
+          role: "user",
           content: message,
         },
       ],
@@ -50,15 +61,15 @@ export async function action({request}: ActionArgs): Promise<ReturnedDataProps> 
     const answer = chat.data.choices[0].message?.content;
 
     return {
-      message: body.get('message') as string,
+      message: body.get("message") as string,
       answer: answer as string,
       chatHistory,
     };
   } catch (error: any) {
     return {
-      message: body.get('message') as string,
-      answer: '',
-      error: error.message || 'Something went wrong! Please try again.',
+      message: body.get("message") as string,
+      answer: "",
+      error: error.message || "Something went wrong! Please try again.",
       chatHistory,
     };
   }
@@ -78,14 +89,16 @@ export default function IndexPage() {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const isSubmitting = navigation.state === 'submitting';
+  const isSubmitting = navigation.state === "submitting";
 
   /**
    * Handles the change event of a textarea element and adjusts its height based on the content.
    * Note: Using the ref to alter the rows rather than state since it's more performant / faster.
    * @param event - The change event of the textarea element.
    */
-  const handleTextareaChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleTextareaChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     if (!inputRef.current) {
       return;
     }
@@ -93,10 +106,17 @@ export default function IndexPage() {
     // reset required for when the user pressed backspace (otherwise it would stay at max rows)
     inputRef.current.rows = minTextareaRows;
 
-    const lineHeight = parseInt(window.getComputedStyle(inputRef.current).lineHeight);
-    const paddingTop = parseInt(window.getComputedStyle(inputRef.current).paddingTop);
-    const paddingBottom = parseInt(window.getComputedStyle(inputRef.current).paddingBottom);
-    const scrollHeight = inputRef.current.scrollHeight - paddingTop - paddingBottom;
+    const lineHeight = parseInt(
+      window.getComputedStyle(inputRef.current).lineHeight
+    );
+    const paddingTop = parseInt(
+      window.getComputedStyle(inputRef.current).paddingTop
+    );
+    const paddingBottom = parseInt(
+      window.getComputedStyle(inputRef.current).paddingBottom
+    );
+    const scrollHeight =
+      inputRef.current.scrollHeight - paddingTop - paddingBottom;
     const currentRows = Math.floor(scrollHeight / lineHeight);
 
     if (currentRows >= maxTextareaRows) {
@@ -111,20 +131,26 @@ export default function IndexPage() {
    * Adds a new message to the chat history
    * @param data The message to add
    */
-  const pushChatHistory = useCallback((data: ChatHistoryProps) => {
-    setChatHistory(prevState => ([...prevState, data]));
-  }, [setChatHistory]);
+  const pushChatHistory = useCallback(
+    (data: ChatHistoryProps) => {
+      setChatHistory((prevState) => [...prevState, data]);
+    },
+    [setChatHistory]
+  );
 
   /**
    * Saves the user's message to the chat history
    * @param content The user's message
    */
-  const saveUserMessage = (content: string) => {
-    pushChatHistory({
-      content,
-      role: 'user',
-    })
-  };
+  const saveUserMessage = useCallback(
+    (content: string) => {
+      pushChatHistory({
+        content,
+        role: "user",
+      });
+    },
+    [pushChatHistory]
+  );
 
   /**
    * Ensure the user message is added to the chat on submit (button press)
@@ -132,7 +158,7 @@ export default function IndexPage() {
    */
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(event.target as HTMLFormElement);
-    const message = formData.get('message');
+    const message = formData.get("message");
 
     saveUserMessage(message as string);
   };
@@ -143,14 +169,17 @@ export default function IndexPage() {
    *
    * @param event The keydown event
    */
-  const submitFormOnEnter = useCallback((event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    const value = (event.target as HTMLTextAreaElement).value;
+  const submitFormOnEnter = useCallback(
+    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      const value = (event.target as HTMLTextAreaElement).value;
 
-    if (event.key === 'Enter' && !event.shiftKey && value.trim().length > 2) {
-      saveUserMessage(value);
-      submit(formRef.current, {replace: true});
-    }
-  }, [submit, formRef, saveUserMessage]);
+      if (event.key === "Enter" && !event.shiftKey && value.trim().length > 2) {
+        saveUserMessage(value);
+        submit(formRef.current, { replace: true });
+      }
+    },
+    [submit, formRef, saveUserMessage]
+  );
 
   /**
    * Scrolls to the bottom of the chat container
@@ -164,11 +193,11 @@ export default function IndexPage() {
 
     const step = (currentTime: number) => {
       const targetScrollTop = Math.max(
-          body.scrollHeight,
-          body.offsetHeight,
-          html.clientHeight,
-          html.scrollHeight,
-          html.offsetHeight
+        body.scrollHeight,
+        body.offsetHeight,
+        html.clientHeight,
+        html.scrollHeight,
+        html.offsetHeight
       );
       const progress = (currentTime - startTime) / animationDuration;
 
@@ -201,8 +230,8 @@ export default function IndexPage() {
       return;
     }
 
-    if (navigation.state === 'submitting') {
-      inputRef.current.value = '';
+    if (navigation.state === "submitting") {
+      inputRef.current.value = "";
       inputRef.current.rows = 1;
     } else {
       inputRef.current.focus();
@@ -217,9 +246,9 @@ export default function IndexPage() {
     if (data?.error) {
       pushChatHistory({
         content: data.error as string,
-        role: 'assistant',
+        role: "assistant",
         error: true,
-      })
+      });
 
       return;
     }
@@ -227,20 +256,20 @@ export default function IndexPage() {
     if (data?.answer) {
       const newAnswer = {
         content: data.answer as string,
-        role: 'assistant',
+        role: "assistant",
       };
 
       pushChatHistory(newAnswer as ChatHistoryProps);
 
       // push location to history
-      navigate('/', {
+      navigate("/", {
         state: {
           ...location.state,
           chatHistory: [...chatHistory, newAnswer],
         },
-      })
+      });
     }
-  }, [data, pushChatHistory, navigate]);
+  }, [data, pushChatHistory, navigate, location.state, chatHistory]);
 
   /**
    * Clears the chat history when the page is loaded without any state
@@ -294,9 +323,7 @@ export default function IndexPage() {
                 />
               </React.Fragment>
             ))}
-            {isSubmitting && (
-              <Message thinking role="assistant" content="" />
-            )}
+            {isSubmitting && <Message thinking role="assistant" content="" />}
           </div>
         )}
       </div>
@@ -310,7 +337,12 @@ export default function IndexPage() {
           className="max-w-[500px] mx-auto"
         >
           <div className="input-wrap relative flex items-center">
-            <label htmlFor="message" className="absolute left[-9999px] w-px h-px overflow-hidden">Ask a question</label>
+            <label
+              htmlFor="message"
+              className="absolute left[-9999px] w-px h-px overflow-hidden"
+            >
+              Ask a question
+            </label>
             <textarea
               id="message"
               aria-disabled={isSubmitting}
@@ -327,7 +359,8 @@ export default function IndexPage() {
             />
             <input
               type="hidden"
-              value={JSON.stringify(chatHistory)} name="chat-history"
+              value={JSON.stringify(chatHistory)}
+              name="chat-history"
             />
             <button
               aria-label="Submit"
@@ -341,22 +374,29 @@ export default function IndexPage() {
           </div>
         </Form>
         <p className="made-with text-xs text-center mt-4">
-          Made with ❤️ by <a target="_blank" href="http://joshuasanger.ca">Josh Sanger</a>
+          Made with ❤️ by{" "}
+          <a target="_blank" href="http://joshuasanger.ca" rel="noreferrer">
+            Josh Sanger
+          </a>
         </p>
       </div>
     </main>
   );
 }
 
-export function ErrorBoundary({error}: {error: Error}) {
+export function ErrorBoundary({ error }: { error: Error }) {
   return (
     <main className="container mx-auto rounded-lg h-full grid grid-rows-layout p-4 pb-0 sm:p-8 sm:pb-0 max-w-full sm:max-w-auto">
       <div className="chat-container">
         <div className="intro grid place-items-center h-full text-center">
           <div className="intro-content inline-block px-4 py-8 border border-error rounded-lg">
-            <h1 className="text-3xl font-semibold">Oops, something went wrong!</h1>
+            <h1 className="text-3xl font-semibold">
+              Oops, something went wrong!
+            </h1>
             <p className="mt-4 text-error ">{error.message}</p>
-            <p className="mt-4"><Link to="/">Back to chat</Link></p>
+            <p className="mt-4">
+              <Link to="/">Back to chat</Link>
+            </p>
           </div>
         </div>
       </div>

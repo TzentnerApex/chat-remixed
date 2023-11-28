@@ -1,4 +1,4 @@
-import {type ChatCompletionRequestMessage} from 'openai';
+import { type ChatCompletionRequestMessage } from "openai";
 
 /**
  * Add the context loading here
@@ -7,8 +7,8 @@ import {type ChatCompletionRequestMessage} from 'openai';
  */
 const context = [
   {
-    role: 'system',
-    content: 'You are a helpful assistant.',
+    role: "system",
+    content: "You are a helpful assistant.",
   },
 ];
 
