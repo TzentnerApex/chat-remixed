@@ -11,9 +11,9 @@ import {
   useLocation,
   useNavigate,
 } from "@remix-run/react";
+import { SendOutlined as SendIcon } from "@mui/icons-material";
 
 import context from "~/context";
-import { Send as SendIcon } from "~/components/Icons";
 import Message from "~/components/Message";
 import type { ChatCompletionMessage } from "~/types";
 
@@ -258,8 +258,6 @@ export default function IndexPage() {
         role: "assistant",
       };
 
-      pushChatHistory(newAnswer as ChatHistoryProps);
-
       // push location to history
       navigate("/", {
         state: {
@@ -306,13 +304,12 @@ export default function IndexPage() {
         {chatHistory.length === 0 && (
           <div className="intro grid place-items-center h-full text-center">
             <div className="intro-content">
-              <h1 className="text-4xl font-semibold">OpenAI base</h1>
-              <p className="mt-4">Ask anything 😊</p>
+              <p className="text-5xl">How can I help you today?</p>
             </div>
           </div>
         )}
         {chatHistory.length > 0 && (
-          <div className="messages max-w-maxWidth mx-auto min-h-full grid place-content-end grid-cols-1 gap-4">
+          <div className="messages max-w-5xl mx-auto min-h-full grid place-content-start grid-cols-1">
             {chatHistory.map((chat, index) => (
               <React.Fragment key={`message-${index}`}>
                 <Message
@@ -326,7 +323,7 @@ export default function IndexPage() {
           </div>
         )}
       </div>
-      <div className="form-container p-4 sm:p-8 backdrop-blur-md sticky bottom-0">
+      <div className="form-container p-4 sm:p-8 sticky bottom-0 bg-white border-t">
         <Form
           aria-disabled={isSubmitting}
           method="post"
@@ -346,8 +343,8 @@ export default function IndexPage() {
               id="message"
               aria-disabled={isSubmitting}
               ref={inputRef}
-              className="auto-growing-input m-0 appearance-none text-black placeholder:text-black resize-none text-sm md:text-base py-3 pl-5 pr-14 border border-slate-400 outline-none rounded-4xl w-full block leading-6 bg-white"
-              placeholder="Ask a question"
+              className="auto-growing-input m-0 appearance-none text-black placeholder:text-gray-700 resize-none text-sm md:text-base py-3 pl-5 pr-14 outline-none w-full block leading-6 bg-white rounded-lg ring ring-opacity-50 border border-green-500 ring-green-100"
+              placeholder="Type a message..."
               name="message"
               onChange={handleTextareaChange}
               required
@@ -368,16 +365,10 @@ export default function IndexPage() {
               type="submit"
               disabled={isSubmitting}
             >
-              <SendIcon />
+              <SendIcon fontSize="small" className="text-zinc-300" />
             </button>
           </div>
         </Form>
-        <p className="made-with text-xs text-center mt-4">
-          Made with ❤️ by{" "}
-          <a target="_blank" href="http://joshuasanger.ca" rel="noreferrer">
-            Josh Sanger
-          </a>
-        </p>
       </div>
     </main>
   );
