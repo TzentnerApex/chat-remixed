@@ -11,10 +11,10 @@ import {
   useLocation,
   useNavigate,
 } from "@remix-run/react";
-import { SendOutlined as SendIcon } from "@mui/icons-material";
 
 import context from "~/context";
 import Message from "~/components/Message";
+import { SendIcon, UploadIcon, ClearIcon } from "~/components/icons";
 import type { ChatCompletionMessage } from "~/types";
 
 export interface ReturnedDataProps {
@@ -323,14 +323,17 @@ export default function IndexPage() {
           </div>
         )}
       </div>
-      <div className="form-container p-4 sm:p-8 sticky bottom-0 bg-white border-t">
+      <div className="form-container p-4 sm:p-8 sticky bottom-0 bg-white border-t flex items-center justify-center gap-4">
+        <button className="rounded-md flex items-center gap-1 p-3 hover:bg-slate-100 border">
+          <UploadIcon className="text-base" />
+        </button>
         <Form
           aria-disabled={isSubmitting}
           method="post"
           ref={formRef}
           onSubmit={handleFormSubmit}
           replace
-          className="max-w-[500px] mx-auto"
+          className="w-[620px]"
         >
           <div className="input-wrap relative flex items-center">
             <label
@@ -365,10 +368,17 @@ export default function IndexPage() {
               type="submit"
               disabled={isSubmitting}
             >
-              <SendIcon fontSize="small" className="text-zinc-300" />
+              <SendIcon className="text-base" />
             </button>
           </div>
         </Form>
+        <button
+          className="rounded-md flex items-center gap-1 p-3 hover:bg-slate-100 border text-sm leading-4 h-4"
+          onClick={() => setChatHistory([])}
+        >
+          <ClearIcon className="text-base" />
+          Clear
+        </button>
       </div>
     </main>
   );

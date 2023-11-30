@@ -2,12 +2,8 @@ import cn from "classnames";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
-import {
-  SmartToyOutlined as AssistantIcon,
-  PersonOutlined as UserIcon,
-} from "@mui/icons-material";
-
 import type { Role } from "~/types";
+import { UserIcon, AssistantIcon } from "./icons";
 
 export interface MessageProps {
   content: string;
