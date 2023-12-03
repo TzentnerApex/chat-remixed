@@ -323,7 +323,7 @@ export default function IndexPage() {
           </div>
         )}
       </div>
-      <div className="form-container p-4 sm:p-8 sticky bottom-0 bg-white border-t flex items-center justify-center gap-4">
+      <div className="form-container p-4 sm:p-6 sticky bottom-0 bg-white border-t flex items-center justify-center gap-4">
         <button className="rounded-md flex items-center gap-1 p-3 hover:bg-slate-100 border">
           <UploadIcon className="text-base" />
         </button>
