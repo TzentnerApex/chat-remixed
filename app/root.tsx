@@ -10,6 +10,11 @@ import {
 
 import tailwindCss from "~/stylesheets/tailwind.css";
 import customCss from "~/stylesheets/custom.css";
+import "@mantine/core/styles.css";
+
+import { cssBundleHref } from "@remix-run/css-bundle";
+import type { LinksFunction } from "@remix-run/node";
+import { MantineProvider, ColorSchemeScript } from "@mantine/core";
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
@@ -23,18 +28,21 @@ export default function App() {
       <head>
         <Meta />
         <Links />
+        <ColorSchemeScript />
       </head>
       <body className="h-full bg-white text-black font-body leading-6 bg-fixed">
-        <Outlet />
-        <ScrollRestoration />
-        <Scripts />
-        <LiveReload />
+        <MantineProvider>
+          <Outlet />
+          <ScrollRestoration />
+          <Scripts />
+          <LiveReload />
+        </MantineProvider>
       </body>
     </html>
   );
 }
 
-export function links() {
+export const links: LinksFunction = () => {
   return [
     {
       rel: "preconnect",
@@ -43,7 +51,6 @@ export function links() {
     {
       rel: "preconnect",
       href: "https://fonts.gstatic.com",
-      crossOrigin: "true",
     },
     {
       rel: "stylesheet",
@@ -61,5 +68,6 @@ export function links() {
       rel: "stylesheet",
       href: customCss,
     },
+    ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
   ];
-}
+};
